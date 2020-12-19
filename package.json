@@ -1,0 +1,45 @@
+{
+    "name": "reactblog",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "backend": "nodemon ./server/server.js --exec babel-node --ignore './client'",
+        "dev": "concurrently \"npm run backend\" \"npm run start --prefix client\"",
+        "prebuild": "cd client && npm run build",
+        "build": "babel server --out-dir build",
+        "build:server": "babel server --out-dir build"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "aws-sdk": "^2.749.0",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "helmet": "^4.1.0",
+        "hpp": "^0.2.3",
+        "jsonwebtoken": "^8.5.1",
+        "moment": "^2.27.0",
+        "mongoose": "^5.10.2",
+        "multer": "^1.4.2",
+        "multer-s3": "^2.9.0",
+        "node-sass": "^4.14.1",
+        "path": "^0.12.7",
+        "sass-loader": "^10.0.1"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.10.5",
+        "@babel/core": "^7.11.4",
+        "@babel/node": "^7.10.5",
+        "@babel/polyfill": "^7.10.4",
+        "@babel/preset-env": "^7.11.0",
+        "babel-loader": "^8.1.0",
+        "concurrently": "^5.3.0",
+        "morgan": "^1.10.0",
+        "nodemon": "^2.0.4"
+    }
+}

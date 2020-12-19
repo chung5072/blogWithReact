@@ -1,0 +1,160 @@
+* hello 초록색으로 표시 - 일반 정보 - 좀 더 중요
+* ! hello 빨간색으로 표시 - 중요한 주의사항
+* ? hello 파란색으로 표시 - 궁금한 사항
+* TODO hello 주황색으로 표시 - 추가적으로 해야 할 일
+
+npm i express cors dotenv hpp helmet
+express: node js server framework
+cors: 서버를 운용하는데 다른 곳에서 자원을 이용할 수 있도록
+- 예를 들어서 aws에서 파일을 다운받는다거나 등등...
+dotenv: 외부에 공개되서는 안되는 비밀스러운 값들을 dotenv라는 파일에 저장해놓고 내부에 필요한 곳에서 빼서 사용할 수 있도록
+hpp: 서버 상에 보안 상에 취약점들을 보안해주는 라이브러리
+helmet: 서버 상에 보안 상에 취약점들을 보안해주는 라이브러리
+
+.gitignore: git에다가 코드를 올릴 때 같이 올리고 싶지 않은 부분들을 설정하는 것
+
+mongoose: DB로 mongo DB를 이용할 텐데 js만으로 운용할 수 있도록
+moment: mongo DB는 utc 시간대를 사용, 그래서 우리에게 맞는 시간대로 보완하기 위해서 사용
+
+npm i @babel/cli @babel/core @babel/node @babel/preset-env babel-loader -D
+babel: 최신 문법을 사용하고 싶은데 브라우저에서 최신 문법을 지원하지 않을 경우 
+       최신 문법을 자동으로 과거 문법으로 컴파일해주는 라이브러리
+- @babel/cli: babel을 명령어처럼 사용할 수 있도록
+- @babel/core: es6코드 같은 경우 변환을 시켜주는 tool chain
+- @babel/preset-env: 최신 문법을 변환해줄 때 설정해줘야 하는 세세한 환경들을 미리 설정해줌
+- babel-loader: 최종적으로 컴파일해주는 라이브러리
+- @babel/polyfill: babel node로 실행하게 된다면 특별하게 추가하는 것 없이 
+                   babel/polyfill만 import 해주면 최신 문법의 코드를 사용할 수 있도록
+- -D: 개발 단계에서만 사용하겠다 > git을 통해 배포할 때 package.json에서 devDependencies의 내용들은 빠지게 된다.
+
+npm i morgan nodemon -D
+morgan: 서버에서 로그 기록을 보여주는 라이브러리
+nodemon: 파일을 저장했을 때 서버에 즉각 반영시키기 위해서 서버를 자동적으로 재시작해주는 라이브러리
+
+폴더: clent, server
+client는 react를 생성하고 server에다가 제공하는 방식으로 진행
+backend에다가 frontent를 올리는 방식으로 진행
+
+폴더: server/.babelrc
+babel 환경설정
+
+폴더: models
+몽고 DB 모델
+- user.js: 유저 관련 모델
+- post.js: 글 작성 관련 모델
+- commnet.js: 댓글 관련 모델
+- category.js: 글의 카테고리 관련 모델
+s
+Mongo DB cluster
+Whitelist IP address: 여기서 IP 등록을 해야 접속이 가능함.
+- ID와 PW가 털리더라도 등록한 IP가 아니면 접속이 불가하다.
+- 향후 EC2 서버에다가 우리 서버와 front를 올리게 되면 IP 등록을 해줘야 접속이 가능하다
+DB 설정
+- 개인정보이므로 .env에 작성
+- <password>와 <dbname> 수정
+
+토큰 인증
+기본적인 방식은 토큰을 가져오게 되면 해당 토큰을 해석을 해서 reg 유저와 해석한 값이 같다면 다음으로 넘어가는 방식
+
+
+auth.js > async 이용
+router.post('/', async (req, res) => {
+    const { email, password } = req.body;
+    
+    // Simple Validation
+    if (!email || !password) {
+        return res.status(400).json({ msg: '모든 필드를 채워주세요.' });
+    }
+
+    //   Check for existing user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return res.status(400).json({ msg: '유저가 존재하지 않습니다.' });
+    }
+
+    //   Validate password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return res.status(400).json({ msg: '비밀번호가 일치하지 않습니다.' });
+    }
+
+    jwt.sign(
+        { id: user.id },
+        JWT_SECRET,
+        { expiresIn: '2 days' },
+        (err, token) => {
+            if (err) throw err;
+            res.json({
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
+            });
+        },
+    );
+});
+
+토큰값은 로그인할 때마다 변한다.
+
+npx create-react-app .
+npx: 최신의 패키지를 설치
+.: 현재 위치에 설치
+
+npm i redux react-redux redux-saga react-router-dom connected-react-router bootstrap reactstrap dotenv
+상태 관리: redux, react-redux
+비동기식 상태 관리: redux-saga
+라우터 관리: react-router-dom
+리액트를 사용해서 라우터를 관리: connected-react-router
+css를 위한 프레임워크: bootstrap
+리액트에서 bootstrap을 사용하기 위한 라이브러리: reactstrap
+
+redux 세팅
+redux/reducers: reducer만 담을 폴더
+redux/sagas: redux-saga만 담을 폴더
+
+store.js의 initialState 설명 (16) CRA & Redux(3)의 15:00
+// 일반적으로 react라는 것은 어떻게 상태 관리를 하게 되냐고 하면
+// 최상위에서 어떤 상태값을 가지면 아래(자식)로 상태값을 넘겨준다.
+// 자식에서 상태값을 활용하는데 아래에서 부모의 값을 사용하고 싶다고 하면
+// 부모에게서 자식으로 값을 받아와서 손자까지 
+// 위에서 아래로 상태값을 물흐르듯이 가져와야
+
+그래서 redux라는 것은 store 한곳에 모든 상태값을 저장하게 된다
+한 곳에 모든 상태값을 저장한 후 이 곳에서 상태값을 끄집어 내서
+어디에서 필요하든 store에서 값을 끄집어내서 값을 사용하게 된다.
+
+reducer라는 곳에 store의 state를 관리
+
+reducer에서 어떤 상태는 값이 어떻게 되는지 선언을 해주게 된다
+reducers 폴더에서 상태값들을 관리할지를 정의하게 된다,
+redux라는 것은 모든 상태 관리를 한 곳에 집중을 통해서 
+집중을 한후 이 곳에서만 상태값이 들어가고 나오기 땜에 용이하다.
+
+초기 상태: initialState는 당연히 {}, 빈 값
+
+reducer는 상태가 어떻게 될지를 정해주는 곳
+sagas는 이런 상태일 때 어떠한 함수들이 작동해야하는지 저장하는 곳
+-> 둘이 세트, 일반적으로 상태 관리를 주로 한다 
+
+web 구조
+nav: 상단에 내가 가고 싶은 곳을 링크로 만들어 놓은 곳
+
+react-dom: UI를 실제 브라우저에서 렌더링할 때 사용하는 라이브러리
+렌더링: 그려준다.
+index.js - 브라우저에 렌더링하는 도구에서 렌더링하여 react 규격에 맞춰서 앱을 그려준다
+그때 참조하는 것은 document.getElementById("root")
+=> index.html - <div id="root"></div>
+
+route 폴더 구조
+nomalRoute: 누구나 접근이 가능한 라우터
+protectedRoute: 권한이 있는 사람만 접근할 수 있는 라우터 
+ex) 글을 쓰고나서 수정 > 글 쓴 사람만 가능
+
+
+create-react-app에서 .env를 사용할 때
+먼저 REACT_APP으로 시작해줘야 한다.
